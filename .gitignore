@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environments
+.env
+.venv/
+env/
+venv/
+
+# OS
+.DS_Store
+
+# Data
+*.csv
+data/processed/*.csv
+data/processed/*.parquet
+
+# Logs
+*.log
+
+# Dash/Streamlit cache
+.cache/
