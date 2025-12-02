@@ -14,6 +14,7 @@ def create_layout(app):
         },
         children=[
 
+            # title
             html.H1(
                 "Spotify Music Analytics Dashboard",
                 style={
@@ -22,7 +23,7 @@ def create_layout(app):
                 },
             ),
 
-            # Dropdown container
+            # feature & genre selection
             html.Div(
                 style={
                     "display": "flex",
@@ -32,6 +33,7 @@ def create_layout(app):
                 },
                 children=[
 
+                    # feature Dropdown
                     html.Div(
                         style={"width": "300px"},
                         children=[
@@ -53,6 +55,7 @@ def create_layout(app):
                         ],
                     ),
 
+                    # genre Dropdown
                     html.Div(
                         style={"width": "300px"},
                         children=[
@@ -70,6 +73,7 @@ def create_layout(app):
                 ],
             ),
 
+            # scatter plot
             html.Div(
                 dcc.Graph(id="valence-scatter"),
                 style={
@@ -80,5 +84,116 @@ def create_layout(app):
                     "minHeight": "900px",
                 },
             ),
+
+            # histogram
+            html.Div(
+                dcc.Graph(id="feature-distribution"),
+                style={
+                    "backgroundColor": "white",
+                    "padding": "25px",
+                    "borderRadius": "12px",
+                    "boxShadow": "0 2px 18px rgba(0,0,0,0.07)",
+                    "marginTop": "40px",
+                    "minHeight": "600px"
+                },
+            ),
+
+            # genre comparison
+            html.H2(
+                "Genre Comparison",
+                style={
+                    "marginTop": "50px",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }
+            ),
+
+            html.Div(
+                style={
+                    "display": "flex",
+                    "gap": "20px",
+                    "justifyContent": "center",
+                    "marginBottom": "25px",
+                },
+                children=[
+
+                    # first genre
+                    html.Div(
+                        style={"width": "300px"},
+                        children=[
+                            html.Label("Select Genre A:", style={"fontWeight": "600"}),
+                            dcc.Dropdown(
+                                id="genreA-dropdown",
+                                options=[{"label": g, "value": g} for g in sorted(df["genre"].unique())],
+                                value="Pop",
+                                clearable=False,
+                            )
+                        ],
+                    ),
+
+                    # second genre
+                    html.Div(
+                        style={"width": "300px"},
+                        children=[
+                            html.Label("Select Genre B:", style={"fontWeight": "600"}),
+                            dcc.Dropdown(
+                                id="genreB-dropdown",
+                                options=[{"label": g, "value": g} for g in sorted(df["genre"].unique())],
+                                value="Rock",
+                                clearable=False,
+                            )
+                        ],
+                    ),
+                ],
+            ),
+
+            html.Div(
+                dcc.Graph(id="genre-comparison-chart"),
+                style={
+                    "backgroundColor": "white",
+                    "padding": "25px",
+                    "borderRadius": "12px",
+                    "boxShadow": "0 2px 18px rgba(0,0,0,0.07)",
+                    "minHeight": "600px",
+                },
+            ),
+
+            # radar chart
+            html.H2(
+                "Genre Feature Profile (Radar Chart)",
+                style={
+                    "marginTop": "50px",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }
+            ),
+
+            html.Div(
+                style={
+                    "width": "300px",
+                    "margin": "0 auto 25px",
+                },
+                children=[
+                    html.Label("Select Genre:", style={"fontWeight": "600"}),
+                    dcc.Dropdown(
+                        id="radar-genre-dropdown",
+                        options=[{"label": g, "value": g} for g in sorted(df["genre"].unique())],
+                        value="Pop",
+                        clearable=False,
+                    ),
+                ],
+            ),
+
+            html.Div(
+                dcc.Graph(id="genre-radar-chart"),
+                style={
+                    "backgroundColor": "white",
+                    "padding": "25px",
+                    "borderRadius": "12px",
+                    "boxShadow": "0 2px 18px rgba(0,0,0,0.07)",
+                    "minHeight": "650px",
+                },
+            ),
+
         ],
     )
