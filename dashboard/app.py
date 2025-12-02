@@ -1,51 +1,17 @@
 import dash
-from dash import dcc, html
+from dash import html
 import pandas as pd
-import plotly.express as px
+from layout import create_layout
+from callbacks import register_callbacks
 
-df = pd.read_csv("../data/cleanDataset.csv")
-
-# initialize app
-# app = dash.Dash(__name__)
-app = dash.Dash(__name__, external_stylesheets=["./styles.css"])
-
-# Layout
-app.layout = html.Div([
-    html.H1("Spotify Valence Explorer Dashboard"),
-
-    dcc.Dropdown(
-        id="feature-dropdown",
-        options=[
-            {"label": "Danceability", "value": "danceability"},
-            {"label": "Energy", "value": "energy"},
-            {"label": "Acousticness", "value": "acousticness"},
-            {"label": "Loudness", "value": "loudness"},
-            {"label": "Tempo", "value": "tempo"},
-            {"label": "Instrumentalness", "value": "instrumentalness"},
-            {"label": "Speechiness", "value": "speechiness"},
-        ],
-        value="danceability"
-    ),
-
-    dcc.Graph(id="valence-scatter")
-])
-
-# Callback
-@app.callback(
-    dash.dependencies.Output("valence-scatter", "figure"),
-    [dash.dependencies.Input("feature-dropdown", "value")]
+app = dash.Dash(
+    __name__,
+    external_stylesheets=["./dashboard/styles.css"]
 )
-def update_scatter(feature):
-    fig = px.scatter(
-        df.sample(8000),  # sampling for performance
-        x=feature,
-        y="valence",
-        color="genre",
-        trendline="ols",
-        opacity=0.4,
-        title=f"Valence vs {feature}"
-    )
-    return fig
 
-if __name__ == '__main__':
+#call the layout
+app.layout = create_layout(app)
+register_callbacks(app)
+
+if __name__ == "__main__":
     app.run_server(debug=True)

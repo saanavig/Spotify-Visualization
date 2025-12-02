@@ -1,12 +1,18 @@
 body {
     background: #f5f6fa;
     font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
     font-weight: 700;
 }
 
-.css-1y4p8pa {
-    border-radius: 8px !important;
+.js-plotly-plot, .plot-container {
+    min-height: 800px !important;
+}
+
+div.dash-graph {
+    border-radius: 10px;
 }

@@ -1,6 +1,6 @@
 import pandas as pd
-from dash import Input, Output
 import plotly.express as px
+from dash import Input, Output
 
 df = pd.read_csv("../data/cleanDataset.csv")
 
@@ -8,57 +8,51 @@ def register_callbacks(app):
 
     @app.callback(
         Output("valence-scatter", "figure"),
-        Input("feature-dropdown", "value"),
+        [
+            Input("feature-dropdown", "value"),
+            Input("genre-dropdown", "value"),
+        ]
     )
-    def update_graph(feature):
-        sample_df = df.sample(3000, random_state=42)
+    def update_graph(feature, genre):
+
+        # filter by genre if selected
+        d = df if genre is None else df[df["genre"] == genre]
+
+        sample = d.sample(min(3000, len(d)), random_state=42)
 
         fig = px.scatter(
-            sample_df,
+            sample,
             x=feature,
             y="valence",
-            color="genre",
+            color=None if genre else "genre",
             opacity=0.35,
             title=f"Valence vs {feature.capitalize()}",
             color_discrete_sequence=px.colors.qualitative.Set2,
         )
+
         # global trendline
-        trend_data = px.scatter(
-            sample_df,
+        trend = px.scatter(
+            sample,
             x=feature,
             y="valence",
             trendline="ols"
         ).data[1]
 
-        fig.add_trace(trend_data)
+        trend.line.color = "black"
+        trend.line.width = 3
+        trend.name = "Trendline"
+
+        fig.add_trace(trend)
 
         fig.update_layout(
-            height=550,
-            margin=dict(l=40, r=40, t=60, b=40),
+            height=850,
+            template="simple_white",
+            margin=dict(l=40, r=40, t=80, b=40),
             legend=dict(
-                title="Genre",
-                orientation="v",
-                bgcolor="rgba(255,255,255,0.6)",
+                title="Genre" if not genre else "",
+                bgcolor="rgba(255,255,255,0.7)",
             ),
         )
+
+        fig.update_traces(marker=dict(size=6, opacity=0.4))
         return fig
-
-        # def update_scatter(feature, genre):
-        # d = df
-
-        # if genre:
-        #     d = d[d["genre"] == genre]
-
-        # fig = px.scatter(
-        #     d.sample(min(3000, len(d))),
-        #     x=feature,
-        #     y="valence",
-        #     color="genre" if not genre else None,
-        #     trendline="ols",
-        #     opacity=0.45,
-        #     title=f"Valence vs {feature}"
-        # )
-
-        # fig.update_layout(height=600, margin=dict(l=40, r=40, t=80, b=40))
-        # return fig
-
