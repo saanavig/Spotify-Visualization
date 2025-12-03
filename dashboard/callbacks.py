@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-from dash import Input, Output
+from dash import Input, Output, html
 
 df = pd.read_csv("../data/cleanDataset.csv")
 
@@ -88,7 +88,7 @@ def register_callbacks(app):
 
         return fig
 
-    #genre comparsion
+    # genre comparsion
 
     @app.callback(
         Output("genre-comparison-chart", "figure"),
@@ -184,6 +184,94 @@ def register_callbacks(app):
             height=650,
             template="simple_white",
             margin=dict(l=40, r=40, t=80, b=40)
+        )
+
+        return fig
+
+    # heatmap
+    @app.callback(
+        Output("correlation-heatmap", "figure"),
+        Input("heatmap-genre-dropdown", "value")
+    )
+    def update_heatmap(selected_genre):
+
+        # Filter dataset if a genre is chosen
+        d = df if selected_genre is None else df[df["genre"] == selected_genre]
+
+        # Features to include
+        features = [
+            "danceability", "energy", "valence", "acousticness",
+            "instrumentalness", "speechiness", "loudness",
+            "tempo", "duration_ms", "popularity"
+        ]
+
+        corr = d[features].corr()
+
+        fig = px.imshow(
+            corr,
+            text_auto=True,
+            color_continuous_scale="RdBu_r",
+            title="Correlation Heatmap" if selected_genre is None else f"Correlation Heatmap — {selected_genre}",
+            aspect="auto"
+        )
+
+        fig.update_layout(
+            height=650,
+            template="simple_white",
+            margin=dict(l=40, r=40, t=80, b=40),
+            coloraxis_colorbar=dict(
+                title="Correlation",
+                ticks="outside"
+            )
+        )
+
+        return fig
+    
+    # track search
+
+    @app.callback(
+        Output("track-profile-plot", "figure"),
+        Input("track-dropdown", "value")
+    )
+    def update_track_profile(track_name):
+
+        if track_name is None:
+            return px.scatter(title="Select a track to display its feature profile.")
+
+        # Get the selected track row
+        row = df[df["track_name"] == track_name].iloc[0]
+
+        # Features to display
+        features = [
+            "danceability", "energy", "valence", "acousticness",
+            "instrumentalness", "speechiness", "loudness",
+            "tempo", "duration_ms", "popularity"
+        ]
+
+        # Normalize loudness + tempo + duration to 0–1 for radar
+        normalized = row.copy()
+        normalized["loudness"] = (row["loudness"] + 60) / 60  # loudness: -60 to 0
+        normalized["tempo"] = row["tempo"] / 220               # approx max tempo
+        normalized["duration_ms"] = row["duration_ms"] / df["duration_ms"].max()
+
+        radar_values = [normalized[f] for f in features]
+
+        fig = px.line_polar(
+            r=radar_values,
+            theta=[f.capitalize() for f in features],
+            line_close=True,
+            title=f"Feature Profile — {track_name}",
+        )
+
+        fig.update_traces(fill="toself")
+
+        fig.update_layout(
+            height=650,
+            template="simple_white",
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 1]),
+            ),
+            margin=dict(l=40, r=40, t=80, b=40),
         )
 
         return fig

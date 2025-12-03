@@ -147,6 +147,7 @@ def create_layout(app):
                 ],
             ),
 
+            #heatmap
             html.Div(
                 dcc.Graph(id="genre-comparison-chart"),
                 style={
@@ -195,5 +196,83 @@ def create_layout(app):
                 },
             ),
 
-        ],
+            html.H2(
+                "Correlation Heatmap",
+                style={
+                    "marginTop": "50px",
+                    "marginBottom": "15px",
+                    "textAlign": "center"
+                }
+            ),
+
+            html.Div(
+                style={
+                    "width": "300px",
+                    "margin": "0 auto 25px",
+                },
+                children=[
+                    html.Label("Select Genre (Optional):", style={"fontWeight": "600"}),
+                    dcc.Dropdown(
+                        id="heatmap-genre-dropdown",
+                        options=[{"label": g, "value": g} for g in sorted(df["genre"].unique())],
+                        value=None,
+                        clearable=True,
+                        placeholder="All Genres"
+                    ),
+                ],
+            ),
+
+            html.Div(
+                dcc.Graph(id="correlation-heatmap"),
+                style={
+                    "backgroundColor": "white",
+                    "padding": "25px",
+                    "borderRadius": "12px",
+                    "boxShadow": "0 2px 18px rgba(0,0,0,0.07)",
+                    "minHeight": "650px",
+                },
+            ),
+
+            # track search option'
+
+            html.H2(
+                "Track Search & Feature Profile",
+                style={
+                    "marginTop": "60px",
+                    "textAlign": "center",
+                }
+            ),
+
+            html.Div(
+                style={
+                    "width": "400px",
+                    "margin": "0 auto 25px",
+                    "textAlign": "center"
+                },
+                children=[
+                    html.Label("Search Track:", style={"fontWeight": "600"}),
+                    dcc.Dropdown(
+                        id="track-dropdown",
+                        options=[{"label": name, "value": name} for name in sorted(df["track_name"].unique())],
+                        placeholder="Type or scroll to select a track...",
+                        multi=False,
+                        value=None,
+                    ),
+                ],
+            ),
+
+            html.Div(
+                [
+                    dcc.Graph(id="track-profile-plot"),
+                ],
+                style={
+                    "backgroundColor": "white",
+                    "padding": "25px",
+                    "borderRadius": "12px",
+                    "boxShadow": "0 2px 18px rgba(0,0,0,0.07)",
+                    "minHeight": "650px",
+                    "marginBottom": "35px"
+                },
+            ),
+    ],
     )
