@@ -8,7 +8,7 @@ def create_about():
             dbc.Container(
                 [
                     html.H1(
-                        "About the Spotify Analytics Dashboard",
+                        "Spotify Analytics Dashboard",
                         className="display-5 fw-bold text-center",
                     ),
                     html.P(
